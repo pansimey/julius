@@ -17,8 +17,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "julius"
   gem.homepage = "http://github.com/hadzimme/julius"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{Julius on Ruby}
+  gem.description = %Q{A thin wrapper for Julius, the Open-Source Large Vocabulary CSR Engine}
   gem.email = "hajime.wakahara@gmail.com"
   gem.authors = ["Hajime WAKAHARA"]
   # dependencies defined in Gemfile
