@@ -1,9 +1,59 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 
 require 'socket'
 require 'rexml/document'
 
 class Julius
+  module Message
+    class StartProc
+    end
+
+    class StopProc
+    end
+
+    class StartRecog
+    end
+
+    class EndRecog
+    end
+
+    class Input
+    end
+
+    class InputParam
+    end
+
+    class Gmm
+    end
+
+    class RecogOut
+    end
+
+    class RecogFail
+    end
+
+    class Rejected
+    end
+
+    class GraphOut
+    end
+
+    class GramInfo
+    end
+
+    class SysInfo
+    end
+
+    class EngineInfo
+    end
+
+    class Grammar
+    end
+
+    class RecogProcess
+    end
+  end
+
   def initialize(path_of_model, encoding = 'u')
     case encoding[/^./]
     when 'u', 'U'
@@ -38,9 +88,7 @@ class Julius
           source.sub!(/\.\n$/){''}
           xmls = source.split(/\.\n/)
           xmls.each do |xml|
-            # Juliusが正しくないXMLを吐いてくるので2箇所アドホックに修正
-            xml.gsub!(/CLASSID="<s>"/){'CLASSID="&lt;s&gt;"'}
-            xml.gsub!(/CLASSID="<\/s>"/){'CLASSID="&lt;/s&gt;"'}
+            xml.gsub!(/CLASSID="<(\/?s)>"/){"CLASSID=\"&lt;#{$1}&gt;\""}
             begin
               document = REXML::Document.new(xml)
             rescue
@@ -49,7 +97,7 @@ class Julius
             next unless document.root
             case element_name = document.root.name
             when 'STARTPROC'
-            when 'STOPPROC' # 説明書でいうところの'ENDPROC'と思われる
+            when 'STOPPROC'
             when 'STARTRECOG'
             when 'ENDRECOG'
             when 'INPUT'
