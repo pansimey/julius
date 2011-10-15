@@ -8,9 +8,7 @@ class Julius
     encoding_str = { u: 'UTF-8', e: 'EUC-JP', s: 'Shift_JIS' }
     encoding = encoding_str[arg[:encoding].chr.downcase.intern]
     raise ArgumentError, 'not supported encodings' unless encoding
-    fork do
-      `julius -C #{arg[:model_path]} -charconv EUC-JP #{encoding} -module`
-    end
+    fork{ `julius -C #{arg[:model_path]} -charconv EUC-JP #{encoding} -module` }
     @julius_socket = nil
     until @julius_socket
       begin
