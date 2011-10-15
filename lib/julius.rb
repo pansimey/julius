@@ -23,23 +23,22 @@ class Julius
 
   def start
     source = ''
-    loop do
+    while true
       ret = IO::select([@julius_socket])
       ret[0].each do |socket|
         source << socket.recv(65535)
-        if source[/\.\n$/]
-          source.gsub!(/CLASSID="<(\/?s)>"/){"CLASSID=\"&lt;#{$1}&gt;\""}
-          xmls = source.split(/\.\n/)
-          xmls.each do |xml|
-            next unless xml[/^<RECOGOUT/]
-            document = REXML::Document.new(xml)
-            elements = document.root.get_elements('SHYPO/WHYPO')
-            segments = elements.map{|item| item.attribute('WORD').value }
-            sentence = segments.join
-            yield(sentence) if sentence.size > 0
-          end
-          source.clear
+        next unless source[/\.\n$/]
+        source.gsub!(/CLASSID="<(\/?s)>"/, "CLASSID=\"&lt;#{$1}&gt;\"")
+        xmls = source.split(/\.\n/)
+        xmls.each do |xml|
+          next unless xml[/^<RECOGOUT/]
+          document = REXML::Document.new(xml)
+          elements = document.root.get_elements('SHYPO/WHYPO')
+          segments = elements.map{|item| item.attribute('WORD').value }
+          sentence = segments.join
+          yield(sentence) if sentence.size > 0
         end
+        source.clear
       end
     end
   end
