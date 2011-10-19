@@ -3,6 +3,7 @@ require 'rexml/document'
 
 class Julius
   def initialize(arg = {})
+    raise ArgumentError, 'use keyword argument' unless arg.class == Hash
     raise ArgumentError, 'you need :model_path' unless arg[:model_path]
     arg = { encoding: 'u', host: 'localhost', port: 10500 }.merge(arg)
     encoding_str = { u: 'UTF-8', e: 'EUC-JP', s: 'Shift_JIS' }
