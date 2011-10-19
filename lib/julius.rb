@@ -2,6 +2,10 @@ require 'socket'
 require 'rexml/document'
 
 class Julius
+  def self.kill(julius_pid)
+    lambda{ Process.kill 'KILL', julius_pid }
+  end
+
   def initialize(arg = {})
     raise ArgumentError, 'use keyword argument' unless arg.class == Hash
     raise ArgumentError, 'you need :model_path' unless arg[:model_path]
@@ -9,7 +13,9 @@ class Julius
     encoding_str = { u: 'UTF-8', e: 'EUC-JP', s: 'Shift_JIS' }
     encoding = encoding_str[arg[:encoding].chr.downcase.intern]
     raise ArgumentError, 'not supported encodings' unless encoding
-    fork{ `julius -C #{arg[:model_path]} -charconv EUC-JP #{encoding} -module` }
+    @julius_pid = spawn(
+      "julius -C #{arg[:model_path]} -charconv EUC-JP #{encoding} -module",
+      out: '/dev/null')
     @julius_socket = nil
     until @julius_socket
       begin
@@ -18,6 +24,7 @@ class Julius
         sleep 1
       end
     end
+    ObjectSpace.define_finalizer(self, self.class.kill(@julius_pid))
   end
 
   def start
