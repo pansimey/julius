@@ -2,8 +2,8 @@ require 'socket'
 require 'rexml/document'
 
 class Julius
-  def self.kill(julius_pid)
-    lambda{ Process.kill 'KILL', julius_pid }
+  def self.kill(instance)
+    lambda{ Process.kill 'KILL', instance.pid }
   end
 
   def initialize(arg = {})
@@ -13,24 +13,25 @@ class Julius
     encoding_str = { u: 'UTF-8', e: 'EUC-JP', s: 'Shift_JIS' }
     encoding = encoding_str[arg[:encoding].chr.downcase.intern]
     raise ArgumentError, 'not supported encodings' unless encoding
-    @julius_pid = spawn(
+    @pid = spawn(
       "julius -C #{arg[:model_path]} -charconv EUC-JP #{encoding} -module",
       out: '/dev/null')
-    @julius_socket = nil
-    until @julius_socket
+    @socket = nil
+    until @socket
       begin
-        @julius_socket = TCPSocket.new(arg[:host], arg[:port])
+        @socket = TCPSocket.new(arg[:host], arg[:port])
       rescue
         sleep 1
       end
     end
-    ObjectSpace.define_finalizer(self, self.class.kill(@julius_pid))
+    ObjectSpace.define_finalizer(self, self.class.kill(self))
   end
+  attr_reader :pid
 
   def start
     source = ''
     while true
-      ret = IO::select([@julius_socket])
+      ret = IO::select([@socket])
       ret[0].each do |socket|
         source << socket.recv(65535)
         next unless source[/\.\n$/]
@@ -50,18 +51,18 @@ class Julius
   end
 
   def die
-    @julius_socket.send("DIE\n", 0)
+    @socket.send("DIE\n", 0)
   end
 
   def pause
-    @julius_socket.send("PAUSE\n", 0)
+    @socket.send("PAUSE\n", 0)
   end
 
   def terminate
-    @julius_socket.send("TERMINATE\n", 0)
+    @socket.send("TERMINATE\n", 0)
   end
 
   def resume
-    @julius_socket.send("RESUME\n", 0)
+    @socket.send("RESUME\n", 0)
   end
 end
