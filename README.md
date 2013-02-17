@@ -1,6 +1,6 @@
 # Julius
 
-TODO: Write a gem description
+Get results from module mode Julius.
 
 ## Installation
 
