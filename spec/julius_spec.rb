@@ -1,8 +1,16 @@
+# coding: utf-8
+
+fake_bin = File.expand_path(File.dirname(__FILE__) + '/bin')
+ENV['PATH'] = "#{fake_bin}:#{ENV['PATH']}"
+
 require 'rspec'
 require 'julius'
 
-describe Julius do
-  it "fails" do
-    fail "hey buddy, you should probably rename this file and start specing for real"
-  end
+system 'fake_julius start'
+
+describe Julius::Client do
 end
+describe Julius do
+end
+
+system 'fake_julius stop'
