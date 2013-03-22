@@ -5,9 +5,9 @@ require 'julius/command'
 require 'julius/prompt'
 
 class Julius
-  def initialize(host: 'localhost', port: 10500)
-    @host = host
-    @port = port
+  def initialize(arg = {})
+    @host = arg[:host] || 'localhost'
+    @port = arg[:port] || 10500
   end
 
   def each_message
