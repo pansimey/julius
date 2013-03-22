@@ -98,7 +98,6 @@ end
 
 describe Julius do
   before do
-    allow_message_expectations_on_nil
     @socket = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM)
     @socket.stub!(:readline).and_return('<STARTPROC/>', nil)
     TCPSocket.should_receive(:new)
