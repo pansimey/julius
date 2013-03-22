@@ -18,7 +18,19 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require 'julius'
+
+julius = Julius.new
+julius.each_message do |message, prompt|
+  prompt.terminate
+  case message.name
+  when :RECOGOUT
+    puts message.sentence
+  end
+  prompt.resume
+end
+```
 
 ## Contributing
 
