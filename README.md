@@ -1,4 +1,4 @@
-# Julius
+# Julius [![Build Status](https://travis-ci.org/hadzimme/julius.png)](https://travis-ci.org/hadzimme/julius)
 
 Get results from module mode Julius.
 
