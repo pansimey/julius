@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["hajime.wakahara@gmail.com"]
   gem.description   = %q{Get results from module mode Julius.}
   gem.summary       = %q{A wrapper for Julius, the Open-Source Large Vocabulary CSR Engine}
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/hadzimme/julius"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
