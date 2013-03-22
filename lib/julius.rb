@@ -1,4 +1,5 @@
 require 'socket'
+require 'rexml/document'
 require 'julius/version'
 require 'julius/message'
 require 'julius/command'

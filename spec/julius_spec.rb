@@ -4,16 +4,66 @@ require 'rspec'
 require 'julius'
 
 describe Julius::Message do
-  context 'init with <STARTPROC/>' do
-    it 'instance should be one of Julius::Message::Startproc' do
-      message = Julius::Message.init('<STARTPROC/>')
-      message.should be_an_instance_of(Julius::Message::Startproc)
-    end
+  context 'when initialized with XML "<STARTPROC/>"' do
+    subject { message = Julius::Message.init('<STARTPROC/>') }
+    it { should be_an_instance_of(Julius::Message::Startproc) }
+    it { should respond_to :name }
+    its(:name){ should eq :STARTPROC }
   end
 
-  context 'init with unknown xml' do
+  context 'when initialized with unknown XML' do
     subject { lambda { Julius::Message.init('<FOO/>') } }
     it { should raise_error Julius::Message::ElementError }
+  end
+end
+
+describe Julius::Message::Recogout do
+  before do
+    @xml = <<EOS # validなXMLでない
+<RECOGOUT>
+  <SHYPO RANK="1" SCORE="-3214.712891">
+    <WHYPO WORD="" CLASSID="<s>" PHONE="silB" CM="0.244"/>
+    <WHYPO WORD="送れ" CLASSID="送れ:オクレ:送れる:239" PHONE="o k u r e" CM="0.198"/>
+    <WHYPO WORD="ます" CLASSID="ます:マス:ます:146" PHONE="m a s u" CM="0.723"/>
+    <WHYPO WORD="か" CLASSID="か:カ:か:72" PHONE="k a" CM="0.411"/>
+    <WHYPO WORD="？" CLASSID="？:？:？:5" PHONE="sp" CM="0.111"/>
+    <WHYPO WORD="" CLASSID="</s>" PHONE="silE" CM="1.000"/>
+  </SHYPO>
+</RECOGOUT>
+EOS
+    @message = Julius::Message.init(@xml)
+  end
+  subject { @message }
+  it { should respond_to :each }
+  it { should respond_to :first }
+  it { should respond_to :sentence }
+  its(:sentence){ should eq '送れますか？' }
+  context 'each' do
+    it do
+      expect {|block| @message.each(&block) }.to yield_control
+    end
+    it do
+      expect {|block| @message.each(&block) }.to yield_with_args(
+        Julius::Message::Recogout::Shypo)
+    end
+  end
+  context 'first' do
+    subject { @message.first }
+    it { should be_an_instance_of Julius::Message::Recogout::Shypo }
+    context 'each' do
+      # it do
+      #   expect {|block| @message.first.each(&block) }.to yield_control
+      # end
+      it do
+        expect {|block| @message.first.each(&block) }.to yield_successive_args(
+          Julius::Message::Recogout::Shypo::Whypo,
+          Julius::Message::Recogout::Shypo::Whypo,
+          Julius::Message::Recogout::Shypo::Whypo,
+          Julius::Message::Recogout::Shypo::Whypo,
+          Julius::Message::Recogout::Shypo::Whypo,
+          Julius::Message::Recogout::Shypo::Whypo)
+      end
+    end
   end
 end
 
