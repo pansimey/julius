@@ -23,7 +23,7 @@ require 'julius'
 
 julius = Julius.new
 julius.each_message do |message, prompt|
-  prompt.terminate
+  prompt.pause
   case message.name
   when :RECOGOUT
     puts message.sentence
