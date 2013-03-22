@@ -4,6 +4,7 @@ class Julius
 
     class Startproc  < Message; end
     class Endproc    < Message; end
+    class Stopproc   < Message; end # TODO マニュアルに存在しない謎要素
     class Startrecog < Message; end
     class Endrecog   < Message; end
 
